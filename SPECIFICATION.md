@@ -1,12 +1,12 @@
 # Specyfikacja funkcjonalna i techniczna — projekt do uzgodnienia
 
-Data przeglądu źródeł: 2026-11-26. Status: **projekt do dalszego uzgodnienia**; klient Python i `combined` w MVP zaakceptowane 2026-11-26. Implementacja nie została zatwierdzona.
+Data przeglądu źródeł: 2026-11-26. Status: **projekt do dalszego uzgodnienia**; klient Python, `combined`, oba terminale, wykrywanie CLI i nazwa ShellPilot uzgodnione. Implementacja nie została zatwierdzona.
 
 ## 1. Cel i granice
 
 Użytkownik macOS pracujący w interaktywnym Zsh może poprosić o wyjaśnienie lub komendę bez opuszczania bieżącego panelu cmux albo iTerm2. ShellPilot wykorzystuje uwierzytelnienie istniejących lokalnych klientów. Nie instaluje własnego emulatora, nie opakowuje sesji w PTY, nie otwiera dodatkowego panelu, nie żąda klucza API i nie wykonuje propozycji modelu.
 
-Wersja startowa: macOS, Zsh, cmux i iTerm2. Użycie z Oh My Zsh jest opcjonalne; skrypt Zsh musi działać po `source` bez OMZ. Inne powłoki i terminale są poza MVP.
+Wersja startowa: macOS, Zsh, **oba terminale cmux i iTerm2**. Użycie z Oh My Zsh jest opcjonalne; skrypt Zsh musi działać po `source` bez OMZ. Inne powłoki i terminale są poza MVP. ShellPilot wykrywa lokalne CLI i podaje diagnostykę, jeśli ich brak; nie instaluje Codex CLI ani Claude Code.
 
 ## 2. Słownik i pochodzenie kontekstu
 
@@ -17,6 +17,8 @@ Wersja startowa: macOS, Zsh, cmux i iTerm2. Użycie z Oh My Zsh jest opcjonalne;
 Konfiguracja limitów (propozycja): maks. 200 linii i 32 KiB scrollback, 16 KiB wyjścia ostatniego polecenia, przycięcie od najstarszych danych; limit po redakcji sekretów i usunięciu sekwencji sterujących. Puste lub niedostępne dane muszą być jawnie oznaczone w zapytaniu.
 
 ## 3. Zachowania
+
+Agent jest uruchamiany tylko świadomym wywołaniem `ai` lub widgetu `Ctrl+G`. Hooki Zsh zbierają metadane ostatniego polecenia, lecz nie rozpoczynają sesji agenta. `Ctrl+G` służy wyłącznie do generowania komendy; pozostałe zadania uruchamia się poleceniami `ai`.
 
 | Przypadek | Oczekiwany wynik |
 | --- | --- |
@@ -50,9 +52,11 @@ Kontekst przekazywany backendowi ma pola `panel_key`, `cwd`, `last_command`, `ex
 
 Uzgodniono: MVP przyjmuje `combined` i jawne `null` dla rozdzielonych strumieni. Bez PTY wrappera lub ingerencji w uruchamianie poleceń nie można odzyskać osobnych stdout/stderr ze scrollback dowolnej sesji.
 
-1. Czy MVP ma obejmować oba terminale od pierwszego wydania? Propozycja: tak, z osobnymi adapterami i tym samym kontraktem degradacji.
-2. Czy pierwsze wydanie ma wspierać wyłącznie już zainstalowane lokalnie CLI, czy także instalować je? Propozycja: wyłącznie wykrywanie i diagnostyka.
-3. Licencja, nazwa końcowa i minimalne wersje macOS/Zsh/klientów: do decyzji po próbach na rzeczywistym macOS.
+Uzgodniono również: oba terminale od pierwszego wydania, tylko wykrywanie lokalnych CLI oraz nazwa ShellPilot (`shellpilot` jako nazwa repozytorium).
+
+1. Licencja open source: do wyboru przed publikacją.
+2. Minimalne wersje macOS/Zsh/klientów i szczegóły pakowania Pythona: do ustalenia po próbach na rzeczywistym macOS.
+3. Dokładny kontrakt NDJSON, opcjonalne `ai doctor` i polityka kolizji `Ctrl+G`: do doprecyzowania przed implementacją.
 
 ## 7. Źródła
 

@@ -1,16 +1,16 @@
 # Roadmap, MVP i strategia testów — projekt
 
-Status: do dalszego uzgodnienia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i [ARCHITECTURE.md](ARCHITECTURE.md). Klient Python i `combined` w MVP zaakceptowane 2026-11-26. Zadania poniżej nie oznaczają rozpoczętej implementacji.
+Status: do dalszego uzgodnienia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i [ARCHITECTURE.md](ARCHITECTURE.md). Klient Python, `combined`, oba terminale, wykrywanie CLI i nazwa ShellPilot uzgodnione. Zadania poniżej nie oznaczają rozpoczętej implementacji.
 
-## MVP — proponowany zakres
+## MVP — zakres częściowo uzgodniony
 
 1. Cienka wtyczka Zsh działająca przez `source` i jako zewnętrzna wtyczka Oh My Zsh; `ai`, `ai cmd`, `ai fix`, `ai explain`, `ai new`, `ai backend`, `Ctrl+G`.
 2. Klient Python uruchamiany na żądanie, bez daemona, z wersjonowanym NDJSON i streamingiem tekstu w bieżącym terminalu.
 3. Dwa backendy korzystające z lokalnych logowań: Claude Code stream-json i Codex App Server lub `exec --json`, po przejściu testów blokady narzędzi.
-4. Osobne adaptery cmux i iTerm2; panel ID, ograniczony scrollback, metadane z hooków Zsh; jawna degradacja przy braku API.
+4. Osobne adaptery cmux i iTerm2 już w MVP; panel ID, ograniczony scrollback, metadane z hooków Zsh; jawna degradacja przy braku API.
 5. Osobne sesje dla `(panel, backend)`, bez globalnego `--last`; atomowy lokalny zapis tylko identyfikatorów i ustawień.
 6. Ograniczanie i maskowanie kontekstu, brak automatycznego wykonania, propozycje wyłącznie w edytowalnym buforze.
-7. Instalacja/odinstalowanie bez naruszania innych hooków i mapowań; diagnostyka `ai doctor` jest propozycją do zatwierdzenia jako pomocnicze polecenie.
+7. Instalacja/odinstalowanie bez naruszania innych hooków i mapowań. Wykrywanie zainstalowanych Codex CLI i Claude Code oraz diagnostyka braku; bez instalacji tych klientów. `ai doctor` pozostaje propozycją pomocniczego polecenia.
 
 Uzgodniony zakres MVP dostarcza `combined` terminal output. Oddzielne `stdout` i `stderr` mają status `unavailable`, dopóki nie istnieje źródło, które je wiarygodnie rozdziela.
 
