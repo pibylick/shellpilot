@@ -1,6 +1,6 @@
 # ADR 0001: Granice wtyczki i wybór klienta
 
-Status: **proponowane, do zatwierdzenia**
+Status: **częściowo zaakceptowane** — Python i `combined` w MVP uzgodnione; reszta architektury pozostaje projektem.
 Data: 2026-11-26
 
 ## Kontekst
@@ -21,4 +21,4 @@ Codex App Server jest preferowaną ścieżką, jeśli test potwierdzi pełną bl
 
 ## Konsekwencje i warunki zmiany
 
-Python wymaga kontrolowanego sposobu instalacji i pomiaru opóźnienia. Jeśli P95 lub dystrybucja okażą się nieakceptowalne, wracamy do wyboru języka. Jeśli żadna konfiguracja Codex CLI nie zagwarantuje braku autonomicznych narzędzi, backend pozostaje wyłączony do rozwiązania tego problemu. Ostateczny zakres oddzielnych strumieni wymaga decyzji właściciela.
+Python wymaga kontrolowanego sposobu instalacji i pomiaru opóźnienia. Jeśli P95 lub dystrybucja okażą się nieakceptowalne, wracamy do wyboru języka. Jeśli żadna konfiguracja Codex CLI nie zagwarantuje braku autonomicznych narzędzi, backend pozostaje wyłączony do rozwiązania tego problemu. Zakres MVP dla oddzielnych strumieni jest uzgodniony: `combined` z jawną niedostępnością stdout/stderr. Ewentualne przechwytywanie osobnych strumieni wymaga odrębnej decyzji i ADR.

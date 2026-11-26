@@ -1,6 +1,6 @@
 # Specyfikacja funkcjonalna i techniczna — projekt do uzgodnienia
 
-Data przeglądu źródeł: 2026-11-26. Status: **propozycja**, nie zatwierdzona implementacja.
+Data przeglądu źródeł: 2026-11-26. Status: **projekt do dalszego uzgodnienia**; klient Python i `combined` w MVP zaakceptowane 2026-11-26. Implementacja nie została zatwierdzona.
 
 ## 1. Cel i granice
 
@@ -48,10 +48,11 @@ Kontekst przekazywany backendowi ma pola `panel_key`, `cwd`, `last_command`, `ex
 
 ## 6. Otwarte decyzje
 
-1. Czy osobne stdout/stderr są twardym wymogiem pierwszego wydania? Bez PTY wrappera lub ingerencji w uruchamianie poleceń nie można ich odzyskać ze scrollback dowolnej sesji. Propozycja: MVP przyjmuje `combined` i jawne `null` dla rozdzielonych strumieni.
-2. Czy MVP ma obejmować oba terminale od pierwszego wydania? Propozycja: tak, z osobnymi adapterami i tym samym kontraktem degradacji.
-3. Czy pierwsze wydanie ma wspierać wyłącznie już zainstalowane lokalnie CLI, czy także instalować je? Propozycja: wyłącznie wykrywanie i diagnostyka.
-4. Licencja, nazwa końcowa i minimalne wersje macOS/Zsh/klientów: do decyzji po próbach na rzeczywistym macOS.
+Uzgodniono: MVP przyjmuje `combined` i jawne `null` dla rozdzielonych strumieni. Bez PTY wrappera lub ingerencji w uruchamianie poleceń nie można odzyskać osobnych stdout/stderr ze scrollback dowolnej sesji.
+
+1. Czy MVP ma obejmować oba terminale od pierwszego wydania? Propozycja: tak, z osobnymi adapterami i tym samym kontraktem degradacji.
+2. Czy pierwsze wydanie ma wspierać wyłącznie już zainstalowane lokalnie CLI, czy także instalować je? Propozycja: wyłącznie wykrywanie i diagnostyka.
+3. Licencja, nazwa końcowa i minimalne wersje macOS/Zsh/klientów: do decyzji po próbach na rzeczywistym macOS.
 
 ## 7. Źródła
 

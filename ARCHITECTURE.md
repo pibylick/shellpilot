@@ -1,6 +1,6 @@
-# Architektura i analiza techniczna — propozycja
+# Architektura i analiza techniczna — projekt
 
-Stan źródeł: 2026-11-26. Decyzje nie są jeszcze zatwierdzone.
+Stan źródeł: 2026-11-26. Wybór Python dla MVP i zakres `combined` zaakceptowane 2026-11-26; pozostałe decyzje wymagają uzgodnienia.
 
 ## Przepływ
 
@@ -35,12 +35,12 @@ Wtyczka Zsh jest cienka: obsługuje hooki, wybór panelu, wywołanie klienta i e
 
 | Język | Opóźnienie i dystrybucja | JSON stream i utrzymanie | Ocena |
 | --- | --- | --- | --- |
-| Python | Start interpretera i `venv` zwiększają koszt oraz instalację; na macOS interpreter może wymagać osobnego dostarczenia. | Standardowe `asyncio`/`json`, oficjalny pakiet iTerm2; jeden język dla obu adapterów. | **Propozycja MVP**: najszybsze sprawdzenie trudnych integracji, bez mostu międzyjęzykowego. |
+| Python | Start interpretera i `venv` zwiększają koszt oraz instalację; na macOS interpreter może wymagać osobnego dostarczenia. | Standardowe `asyncio`/`json`, oficjalny pakiet iTerm2; jeden język dla obu adapterów. | **Uzgodniony wybór MVP**: upraszcza sprawdzenie trudnych integracji, bez mostu międzyjęzykowego. |
 | Go | Mały koszt startu, jeden binarny artefakt per architektura. | Prosty NDJSON i procesy; iTerm2 wymaga mostu Python lub własnej implementacji jego protokołu. | Dobra alternatywa po stabilizacji kontraktu. |
 | Rust | Mały koszt startu, jeden artefakt, kontrola pamięci. | Solidne biblioteki, większy nakład pracy; iTerm2 dalej wymaga mostu. | Sensowny przy twardym celu dystrybucji jednego pliku. |
 | TypeScript | Runtime Node i pakiety powiększają instalację; koszt startu zależy od sposobu pakowania. | Wygodne zdarzenia i JSON, lecz iTerm2 wymaga mostu Python. | Dobre dla zespołu TS, słabsze dla lekkiej instalacji na macOS. |
 
-Opóźnienie odpowiedzi dominuje zwykle start agenta i sieć; to hipoteza do zmierzenia, nie wynik benchmarku. Przed wyborem produkcyjnym mierzymy medianę/P95 startu klienta, czas do pierwszej delty, RSS, czas adaptera i zachowanie po wznowieniu na Intel i Apple Silicon. Python pozostaje propozycją, dopóki te pomiary i sposób instalacji nie zostaną zatwierdzone.
+Opóźnienie odpowiedzi dominuje zwykle start agenta i sieć; to hipoteza do zmierzenia, nie wynik benchmarku. Przed wydaniem mierzymy medianę/P95 startu klienta, czas do pierwszej delty, RSS, czas adaptera i zachowanie po wznowieniu na Intel i Apple Silicon. Wybór Python dla MVP jest przyjęty; pomiary mogą uzasadnić zmianę w kolejnym ADR.
 
 ## Protokół i sesje
 
@@ -54,7 +54,7 @@ Wybór Codex: preferować App Server po potwierdzeniu blokady narzędzi i zgodno
 
 ## Ryzyka i bramki wykonalności
 
-**Rozdzielne stdout/stderr.** Terminal renderuje połączony strumień; hooki Zsh znają tekst polecenia i status, lecz nie oryginalne deskryptory procesu potomnego. Przechwytywanie przez przekierowanie, `tee`, koproces lub PTY zmienia zachowanie poleceń, TTY i potoków. Bez takiej ingerencji nie obiecujemy wiernych strumieni dla arbitralnych poleceń. Wymaganie wymaga decyzji zakresowej.
+**Rozdzielne stdout/stderr.** Terminal renderuje połączony strumień; hooki Zsh znają tekst polecenia i status, lecz nie oryginalne deskryptory procesu potomnego. Przechwytywanie przez przekierowanie, `tee`, koproces lub PTY zmienia zachowanie poleceń, TTY i potoków. Uzgodniony zakres MVP podaje `combined`, a pola osobnych strumieni pozostają `null` przy braku wiarygodnego źródła.
 
 **Zakaz autonomicznego wykonania.** Read-only sandbox sam w sobie nie oznacza „bez wykonania” i może nie chronić sekretów w czytelnym katalogu. Dla każdego wspieranego wydania klienta testujemy próbę wywołania narzędzia oraz odmowę lub brak możliwości. Jeśli nie da się tego wykazać, backend pozostaje niedostępny. Nie polegamy wyłącznie na instrukcji modelu.
 

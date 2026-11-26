@@ -1,6 +1,6 @@
 # Roadmap, MVP i strategia testów — projekt
 
-Status: do zatwierdzenia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i [ARCHITECTURE.md](ARCHITECTURE.md). Zadania poniżej nie oznaczają rozpoczętej implementacji.
+Status: do dalszego uzgodnienia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i [ARCHITECTURE.md](ARCHITECTURE.md). Klient Python i `combined` w MVP zaakceptowane 2026-11-26. Zadania poniżej nie oznaczają rozpoczętej implementacji.
 
 ## MVP — proponowany zakres
 
@@ -12,7 +12,7 @@ Status: do zatwierdzenia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i 
 6. Ograniczanie i maskowanie kontekstu, brak automatycznego wykonania, propozycje wyłącznie w edytowalnym buforze.
 7. Instalacja/odinstalowanie bez naruszania innych hooków i mapowań; diagnostyka `ai doctor` jest propozycją do zatwierdzenia jako pomocnicze polecenie.
 
-MVP dostarcza `combined` terminal output. Oddzielne `stdout` i `stderr` mają status `unavailable`, dopóki nie istnieje źródło, które je wiarygodnie rozdziela. Ta redukcja zakresu wymaga akceptacji; bez niej MVP nie spełni całego pierwotnego wymagania.
+Uzgodniony zakres MVP dostarcza `combined` terminal output. Oddzielne `stdout` i `stderr` mają status `unavailable`, dopóki nie istnieje źródło, które je wiarygodnie rozdziela.
 
 ## Backlog po MVP
 
