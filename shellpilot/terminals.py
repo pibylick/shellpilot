@@ -67,3 +67,17 @@ def read_terminal(env: Mapping[str, str], runner=None) -> TerminalSnapshot:
             raise TerminalError("iTerm2: missing or invalid session ID")
         return asyncio.run(_iterm_async(session_id))
     raise TerminalError("cmux or iTerm2 session not detected")
+
+
+def panel_key(env: Mapping[str, str]) -> str:
+    if "CMUX_SURFACE_ID" in env or "CMUX_WORKSPACE_ID" in env:
+        surface = env.get("CMUX_SURFACE_ID", "")
+        if not _ID.fullmatch(surface):
+            raise TerminalError("cmux: missing or invalid current surface ID")
+        return f"cmux:{surface}"
+    if "ITERM_SESSION_ID" in env:
+        session_id = env["ITERM_SESSION_ID"].rsplit(":", 1)[-1]
+        if not _ID.fullmatch(session_id):
+            raise TerminalError("iTerm2: missing or invalid session ID")
+        return f"iterm2:{session_id}"
+    raise TerminalError("cmux or iTerm2 session not detected")
