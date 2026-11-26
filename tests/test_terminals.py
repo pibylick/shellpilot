@@ -49,6 +49,46 @@ class ITermTests(unittest.TestCase):
             with self.assertRaises(TerminalError):
                 read_terminal({"ITERM_SESSION_ID": "w0t1p0:ABC"})
 
+    def test_reads_only_exact_iterm_session_with_scroll_back(self):
+        calls = []
+
+        class Connection:
+            @staticmethod
+            async def async_create():
+                return object()
+
+        class Transaction:
+            def __init__(self, conn):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *args):
+                pass
+
+        class Session:
+            session_id = "ABC"
+
+            async def async_get_line_info(self):
+                return types.SimpleNamespace(overflow=10, scrollback_buffer_height=190, mutable_area_height=20)
+
+            async def async_get_contents(self, first, count):
+                calls.append((first, count))
+                return [types.SimpleNamespace(string="last line")]
+
+        class App:
+            def get_session_by_id(self, session_id):
+                self.last_id = session_id
+                return Session()
+
+        fake = types.SimpleNamespace(Connection=Connection, Transaction=Transaction,
+                                     async_get_app=lambda conn: asyncio.sleep(0, result=App()))
+        with patch.dict(sys.modules, {"iterm2": fake}):
+            snap = read_terminal({"ITERM_SESSION_ID": "w0t1p0:ABC"})
+        self.assertEqual((snap.panel_key, snap.text), ("iterm2:ABC", "last line"))
+        self.assertEqual(calls, [(20, 200)])
+
 
 if __name__ == "__main__":
     unittest.main()

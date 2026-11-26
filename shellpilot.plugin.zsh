@@ -38,10 +38,10 @@ ai() {
         print -u2 -r -- 'shellpilot: choose codex or claude'
         return 1
       fi
-      command "$SHELLPILOT_BIN" backend "$2"
+      command "$SHELLPILOT_BIN" backend "$2" --format text
       ;;
     new|doctor)
-      command "$SHELLPILOT_BIN" "$action"
+      command "$SHELLPILOT_BIN" "$action" --format text
       ;;
     cmd)
       shift
@@ -84,6 +84,7 @@ add-zsh-hook -d preexec shellpilot_preexec 2>/dev/null
 add-zsh-hook -d precmd shellpilot_precmd 2>/dev/null
 add-zsh-hook preexec shellpilot_preexec
 add-zsh-hook precmd shellpilot_precmd
+precmd_functions=(shellpilot_precmd ${precmd_functions:#shellpilot_precmd})
 
 if [[ -o interactive ]]; then
   zle -N shellpilot-generate-command

@@ -5,12 +5,14 @@ import shutil
 import subprocess
 from collections.abc import Callable
 
+from .context import redact
+
 
 class BackendError(RuntimeError):
     pass
 
 
-_CODEX_DISABLED = ("shell_tool", "browser_use", "computer_use", "apps")
+_CODEX_DISABLED = ("shell_tool", "browser_use", "computer_use", "apps", "hooks")
 _TOOL_ITEMS = {"command_execution", "file_change", "mcp_tool_call", "web_search", "tool_call"}
 
 
@@ -102,7 +104,12 @@ def run_agent(backend: str, prompt: str, session_id: str | None, cwd: str,
                     completed = True
                 elif kind == "turn.failed":
                     raise BackendError("Codex turn failed")
-        if proc.wait() != 0 or not completed:
+        code = proc.wait()
+        if code != 0:
+            detail = redact(proc.stderr.read(2048)).strip().splitlines()
+            message = detail[-1] if detail else "process exited with an error"
+            raise BackendError(f"{backend}: {message}")
+        if not completed:
             raise BackendError(f"{backend} turn did not complete")
         answer = "".join(parts) or final_text
         if not parts and answer:

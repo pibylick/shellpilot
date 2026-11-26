@@ -1,4 +1,5 @@
 import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -43,15 +44,41 @@ class CliTests(unittest.TestCase):
         self.assertEqual(output, "")
         self.assertIsNone(SessionStore(Path(self.env["SHELLPILOT_STATE_FILE"])).get_session("cmux:surface:1", "codex"))
 
+    @patch("shellpilot.__main__.read_terminal", return_value=TerminalSnapshot("cmux:surface:1", "screen"))
+    @patch("shellpilot.__main__.run_agent", return_value=("echo ok\tunsafe", "s1"))
+    def test_cmd_rejects_control_bytes_before_zle(self, agent, terminal):
+        code, output, _ = self.request(["cmd", "--format", "candidate"])
+        self.assertNotEqual(code, 0)
+        self.assertEqual(output, "")
+
     def test_backend_choice_and_new_are_per_panel(self):
-        code, _, _ = self.request(["backend", "claude"])
+        code, output, _ = self.request(["backend", "claude"])
         self.assertEqual(code, 0)
+        self.assertEqual([json.loads(line)["type"] for line in output.splitlines()], ["backend", "done"])
         store = SessionStore(Path(self.env["SHELLPILOT_STATE_FILE"]))
         self.assertEqual(store.get_backend("cmux:surface:1"), "claude")
         store.set_session("cmux:surface:1", "claude", "s1")
-        code, _, _ = self.request(["new"])
+        code, output, _ = self.request(["new"])
         self.assertEqual(code, 0)
+        self.assertEqual([json.loads(line)["type"] for line in output.splitlines()], ["session", "done"])
         self.assertIsNone(store.get_session("cmux:surface:1", "claude"))
+
+    @patch("shellpilot.__main__.read_terminal", return_value=TerminalSnapshot("cmux:surface:1", "screen"))
+    @patch("shellpilot.__main__.run_agent", return_value=("answer", "session-a"))
+    def test_ndjson_has_correlated_session_and_terminal_record(self, agent, terminal):
+        code, output, _ = self.request(["ask"])
+        rows = [json.loads(line) for line in output.splitlines()]
+        self.assertEqual(code, 0)
+        self.assertEqual([row["type"] for row in rows], ["text_delta", "session", "done"])
+        self.assertEqual(len({row["request_id"] for row in rows}), 1)
+        self.assertEqual(rows[-1]["reason"], "completed")
+
+    def test_ndjson_error_also_ends_with_done(self):
+        code, output, _ = self.request(["fix"])
+        rows = [json.loads(line) for line in output.splitlines()]
+        self.assertNotEqual(code, 0)
+        self.assertEqual([row["type"] for row in rows], ["error", "done"])
+        self.assertFalse(rows[-1]["ok"])
 
 
 if __name__ == "__main__":

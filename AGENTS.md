@@ -1,6 +1,6 @@
 # Wskazówki dla współtwórców i agentów
 
-Projekt jest obecnie wyłącznie specyfikacją. **Nie implementuj produktu przed zatwierdzeniem przez właściciela** [SPECIFICATION.md](SPECIFICATION.md), [ARCHITECTURE.md](ARCHITECTURE.md) i zakresu [ROADMAP.md](ROADMAP.md). Instrukcje użytkownika w rozmowie mają pierwszeństwo przed tym dokumentem.
+Implementacja MVP została rozpoczęta na wyraźną prośbę właściciela. [SPECIFICATION.md](SPECIFICATION.md), [ARCHITECTURE.md](ARCHITECTURE.md) i [ROADMAP.md](ROADMAP.md) opisują cele i ograniczenia. Instrukcje użytkownika w rozmowie mają pierwszeństwo przed tym dokumentem.
 
 ## Niezmienne założenia produktu
 
@@ -16,5 +16,4 @@ Projekt jest obecnie wyłącznie specyfikacją. **Nie implementuj produktu przed
 - Decyzje wymagające wyboru architektury zapisuj w `docs/adr` ze statusem i uzasadnieniem.
 - Weryfikuj zmienne szczegóły CLI i API w dokumentacji źródłowej; zapisuj datę sprawdzenia.
 - Dodawaj testy dla rzeczywistych granic protokołu i integracji, nie dla samej obecności plików.
-- Nie wysyłaj kodu ani repozytorium do zdalnej usługi bez upoważnienia. Nie kopiuj poświadczeń użytkownika.
-- Nie dodawaj licencji ani nie ogłaszaj gotowości open source przed decyzją właściciela o licencji i nazwie.
+- Publikacja na GitHub została upoważniona przez właściciela; licencja Apache-2.0 i nazwa ShellPilot zostały wybrane. Nie kopiuj poświadczeń użytkownika.

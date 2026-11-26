@@ -6,9 +6,9 @@ from shellpilot.backends import BackendError, run_agent
 
 
 class FakeProcess:
-    def __init__(self, records, code=0):
+    def __init__(self, records, code=0, stderr=""):
         self.stdout = io.StringIO("".join(json.dumps(row) + "\n" for row in records))
-        self.stderr = io.StringIO("")
+        self.stderr = io.StringIO(stderr)
         self.returncode = code
         self.args = None
 
@@ -55,6 +55,7 @@ class BackendTests(unittest.TestCase):
         self.assertIn("resume", calls[0])
         self.assertIn("c1", calls[0])
         self.assertIn("shell_tool", calls[0])
+        self.assertIn("hooks", calls[0])
         self.assertNotIn("--last", calls[0])
 
     def test_codex_rejects_tool_event(self):
@@ -65,6 +66,12 @@ class BackendTests(unittest.TestCase):
     def test_incomplete_turn_does_not_succeed(self):
         with self.assertRaises(BackendError):
             run_agent("claude", "hi", None, "/tmp", lambda _: None, lambda *a, **k: FakeProcess([{"type": "system", "session_id": "s1"}]))
+
+    def test_startup_failure_reports_redacted_diagnostic(self):
+        with self.assertRaisesRegex(BackendError, "read-only file system") as failure:
+            run_agent("codex", "hi", None, "/tmp", lambda _: None,
+                      lambda *a, **k: FakeProcess([], 1, "read-only file system token=sk-abcdefghijklmnopqrstuvwxyz0123456789"))
+        self.assertNotIn("abcdefghijklmnopqrstuvwxyz", str(failure.exception))
 
 
 if __name__ == "__main__":

@@ -2,20 +2,46 @@
 
 import re
 
-_OSC = re.compile(r"\x1b\].*?(?:\x07|\x1b\\)", re.DOTALL)
-_CSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
-_ESC = re.compile(r"\x1b[@-_]")
-_CONTROL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f-\x9f]")
 _URL_AUTH = re.compile(r"(https?://)[^\s/@:]+:[^\s/@]+@", re.I)
 _TOKEN = re.compile(r"\b(?:sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})\b")
 _ASSIGNMENT = re.compile(r"(?i)\b((?:api[_-]?key|access[_-]?token|password|secret|authorization)\s*[:=]\s*)[^\s,;]+")
 
 
+class TerminalSanitizer:
+    """Strip terminal controls even when escape sequences span stream chunks."""
+
+    def __init__(self):
+        self.state = "text"
+
+    def feed(self, text: str) -> str:
+        out = []
+        for char in text:
+            if self.state == "text":
+                if char == "\x1b":
+                    self.state = "esc"
+                elif char == "\x9b":
+                    self.state = "csi"
+                elif char == "\x9d":
+                    self.state = "osc"
+                elif char in "\n\t" or 32 <= ord(char) < 127 or ord(char) >= 160:
+                    out.append(char)
+            elif self.state == "esc":
+                self.state = "csi" if char == "[" else "osc" if char == "]" else "text"
+            elif self.state == "csi":
+                if "@" <= char <= "~":
+                    self.state = "text"
+            elif self.state == "osc":
+                if char == "\x07":
+                    self.state = "text"
+                elif char == "\x1b":
+                    self.state = "osc_esc"
+            elif self.state == "osc_esc":
+                self.state = "text" if char == "\\" else "osc"
+        return "".join(out)
+
+
 def sanitize(text: str) -> str:
-    text = _OSC.sub("", text)
-    text = _CSI.sub("", text)
-    text = _ESC.sub("", text)
-    return _CONTROL.sub("", text)
+    return TerminalSanitizer().feed(text)
 
 
 def redact(text: str) -> str:
