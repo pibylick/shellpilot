@@ -1,6 +1,6 @@
 # Roadmap, MVP i strategia testów — projekt
 
-Status: do dalszego uzgodnienia po przeglądzie [SPECIFICATION.md](SPECIFICATION.md) i [ARCHITECTURE.md](ARCHITECTURE.md). Klient Python, `combined`, oba terminale, wykrywanie CLI i nazwa ShellPilot uzgodnione. Zadania poniżej nie oznaczają rozpoczętej implementacji.
+Status: implementacja wersji rozwojowej na gałęzi `feat/mvp`; walidacja na macOS pozostaje otwarta. Klient Python, `combined`, oba terminale, wykrywanie CLI, nazwa ShellPilot i licencja Apache-2.0 zostały uzgodnione.
 
 ## MVP — zakres częściowo uzgodniony
 

@@ -1,0 +1,1 @@
+"""ShellPilot terminal assistant."""

@@ -1,6 +1,6 @@
-# Specyfikacja funkcjonalna i techniczna — projekt do uzgodnienia
+# Specyfikacja funkcjonalna i techniczna
 
-Data przeglądu źródeł: 2026-11-26. Status: **projekt do dalszego uzgodnienia**; klient Python, `combined`, oba terminale, wykrywanie CLI i nazwa ShellPilot uzgodnione. Implementacja nie została zatwierdzona.
+Data przeglądu źródeł: 2026-11-26. Status: implementacja MVP rozpoczęta po zgodzie właściciela; klient Python, `combined`, oba terminale, wykrywanie CLI i nazwa ShellPilot uzgodnione. Licencja: Apache-2.0.
 
 ## 1. Cel i granice
 
@@ -36,7 +36,7 @@ Streaming oznacza przyrostową prezentację odpowiedzi po zdarzeniach JSON, z ob
 
 ## 4. Kontrakt wewnętrzny (propozycja)
 
-Wtyczka wywołuje niezależnego klienta `shellpilot` przez argumenty i lokalny JSON na stdin/stdout. Strumień klienta jest NDJSON: zdarzenia `text_delta`, `command_candidate`, `session`, `warning`, `error`, `done`. Każdy rekord ma `schema_version: 1`, `request_id` i `type`. `done` zawiera `ok` i powód zakończenia. Tylko `command_candidate` po walidacji może trafić do ZLE. stderr procesu służy wyłącznie diagnostyce klienta. Format i trwałość kontraktu do zatwierdzenia przed kodem.
+Wtyczka wywołuje niezależnego klienta `shellpilot`. Backend komunikuje się wyłącznie przez zdarzenia JSON. Domyślne wyjście klienta to NDJSON: `text_delta`, `command_candidate`, `session`, `backend`, `doctor`, `error`, `done`. Każdy rekord ma `schema_version: 1`, `request_id` i `type`; `done` zawiera `ok` oraz powód zakończenia, także przy błędzie. Zsh używa trybów prezentacyjnych `--format text` i `--format candidate`, aby przekazać sam tekst do terminala lub zwalidowaną jednowierszową komendę do ZLE. Te tryby nie parsują tekstowego interfejsu agentów. stderr procesu służy wyłącznie diagnostyce klienta.
 
 Kontekst przekazywany backendowi ma pola `panel_key`, `cwd`, `last_command`, `exit_code`, `scrollback`, `last_output`, `stdout`, `stderr`, `availability` oraz zakresy/źródła danych. Pola tekstowe są danymi niezaufanymi. Sekrety są maskowane przed utworzeniem zapytania; użytkownik otrzymuje ostrzeżenie, gdy filtr mógł pominąć poufny materiał. Samo maskowanie wzorcami nie gwarantuje wykrycia wszystkich sekretów.
 
@@ -54,9 +54,8 @@ Uzgodniono: MVP przyjmuje `combined` i jawne `null` dla rozdzielonych strumieni.
 
 Uzgodniono również: oba terminale od pierwszego wydania, tylko wykrywanie lokalnych CLI oraz nazwa ShellPilot (`shellpilot` jako nazwa repozytorium).
 
-1. Licencja open source: do wyboru przed publikacją.
-2. Minimalne wersje macOS/Zsh/klientów i szczegóły pakowania Pythona: do ustalenia po próbach na rzeczywistym macOS.
-3. Dokładny kontrakt NDJSON, opcjonalne `ai doctor` i polityka kolizji `Ctrl+G`: do doprecyzowania przed implementacją.
+1. Minimalne wersje macOS/Zsh/klientów: do ustalenia po próbach na rzeczywistym macOS.
+2. Dalszy rozwój kontraktu NDJSON i polityka kolizji `Ctrl+G`: do doprecyzowania przed stabilnym wydaniem.
 
 ## 7. Źródła
 
